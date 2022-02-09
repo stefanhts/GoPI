@@ -5,7 +5,41 @@ import (
 	"net/http"
 )
 
-type Server struct{}
+type RequestType int64
+
+const (
+	GET RequestType = iota
+	POST
+	PUT
+	DELETE
+)
+
+type CRUDType int64
+
+const (
+	CREATE CRUDType = iota
+	READ
+	UPDATE
+	DEL
+)
+
+type Endpoint struct {
+	name        string
+	requestType *RequestType
+	action      string
+}
+
+type Endpoints struct {
+	endpoints []*Endpoint
+}
+
+func (e *Endpoints) generateEndpoint(name, action string, reqType RequestType) {
+	//TODO: create an endpoint and call endpoints.bind
+}
+
+func (e *Endpoints) bind(ep *Endpoint) {
+	e.endpoints = append(e.endpoints, ep)
+}
 
 func index(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
