@@ -4,6 +4,7 @@ import (
 	"GoPI/handlers"
 	"log"
 	"net/http"
+	"strings"
 )
 
 type RequestType int64
@@ -15,6 +16,11 @@ const (
 	POST
 	PUT
 	DELETE
+	HEAD
+	CONNECT
+	OPTIONS
+	TRACE
+	PATCH
 )
 
 type CRUDType int64
@@ -37,11 +43,12 @@ type Endpoints struct {
 }
 
 func (e *Endpoints) generateEndpoint(name, action string, req RequestType) {
-	e.bind(&Endpoint{
-		name:        name,
-		action:      action,
-		requestType: &req,
-	})
+	if handlers.IsRequestType(name) {
+		e.bind(&Endpoint{
+			name:   strings.ToUpper(name),
+			action: action,
+		})
+	}
 }
 
 func (e *Endpoints) bind(ep *Endpoint) {
@@ -49,8 +56,24 @@ func (e *Endpoints) bind(ep *Endpoint) {
 }
 
 func (e *Endpoints) bindListeners() {
-	for i := range e.endpoints {
-		mux.HandleFunc(i.name, handlers.Get())
+	for _, end := range e.endpoints {
+		switch *end.requestType {
+		case GET:
+			mux.HandleFunc(end.name, handlers.Get)
+		case POST:
+			mux.HandleFunc(end.name, handlers.Post)
+		case PUT:
+			mux.HandleFunc(end.name, handlers.Put)
+		case DELETE:
+			mux.HandleFunc(end.name, handlers.Delete)
+		case OPTIONS:
+			mux.HandleFunc(end.name, handlers.Options)
+		case TRACE:
+			mux.HandleFunc(end.name, handlers.Trace)
+		case PATCH:
+			mux.HandleFunc(end.name, handlers.Patch)
+		}
+		mux.HandleFunc(end.name, handlers.Get)
 	}
 }
 

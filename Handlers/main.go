@@ -1,37 +1,53 @@
 package handlers
 
-func Get() {
+import (
+	"net/http"
+	"strings"
+)
 
+var Requests = []string{"GET", "POST", "PUT", "DELETE", "HEAD", "CONNECT", "OPTIONS", "TRACE", "PATCH"}
+
+func IsRequestType(name string) bool {
+	for _, v := range Requests {
+		if strings.ToUpper(name) == v {
+			return true
+		}
+	}
+	return false
 }
 
-func Post() {
-
+func Get(w http.ResponseWriter, r *http.Request) {
+	//TODO
 }
 
-func Delete() {
-
+func Post(w http.ResponseWriter, r *http.Request) {
+	//TODO
 }
 
-func Put() {
-
+func Delete(w http.ResponseWriter, r *http.Request) {
+	//TODO
 }
 
-func Head() {
-
+func Put(w http.ResponseWriter, r *http.Request) {
+	//TODO
 }
 
-func Connect() {
-
+func Head(w http.ResponseWriter, r *http.Request) {
+	//TODO
 }
 
-func Options() {
-
+func Connect(w http.ResponseWriter, r *http.Request) {
+	//TODO
 }
 
-func Trace() {
-
+func Options(w http.ResponseWriter, r *http.Request) {
+	//TODO
 }
 
-func Patch() {
+func Trace(w http.ResponseWriter, r *http.Request) {
+	//TODO
+}
 
+func Patch(w http.ResponseWriter, r *http.Request) {
+	//TODO
 }
