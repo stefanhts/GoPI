@@ -3,7 +3,10 @@ package handlers
 import (
 	"net/http"
 	"strings"
+	"fmt"
 )
+
+//TODO: move all Endpoints structs and such to this module
 
 var Requests = []string{"GET", "POST", "PUT", "DELETE", "HEAD", "CONNECT", "OPTIONS", "TRACE", "PATCH"}
 
@@ -19,8 +22,14 @@ func IsRequestType(name string) bool {
 func Get(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(http.StatusOK)
-	w.Write([]byte(`{ "message": "GET request received"}`))
+	path := r.URL.Path
+	w.Write([]byte(fmt.Sprintf(`{ "message": %s}`, path)))
+	
 }
+
+//func (e *Endpoints) GetRecord(path string){
+//	//TODO: implement this
+//}
 
 func Post(w http.ResponseWriter, r *http.Request) {
 	//TODO

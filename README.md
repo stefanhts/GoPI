@@ -7,3 +7,4 @@ we need to build a set of functions which handles different requests and then
 passes the writer and request to another function which has context on which
 endpoint we are handling. These functions will then return the action or something
 along those lines
+2. UPDATE: we can read the endpoint name from the url path r.URL.Path

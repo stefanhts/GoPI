@@ -58,63 +58,67 @@ func (e *Endpoints) bind(ep *Endpoint) {
 
 func (e *Endpoints) bindListeners() {
 	for _, end := range e.endpoints {
-		switch end.requestType {
-		case GET:
-			fmt.Printf("got here")
-			mux.HandleFunc(end.name, handlers.Get)
-		case POST:
-			mux.HandleFunc(end.name, handlers.Post)
-		case PUT:
-			mux.HandleFunc(end.name, handlers.Put)
-		case DELETE:
-			mux.HandleFunc(end.name, handlers.Delete)
-		case OPTIONS:
-			mux.HandleFunc(end.name, handlers.Options)
-		case TRACE:
-			mux.HandleFunc(end.name, handlers.Trace)
-		case PATCH:
-			mux.HandleFunc(end.name, handlers.Patch)
-		}
-		mux.HandleFunc(end.name, end.handleEndpoints)
+		//switch end.requestType {
+		//case GET:
+		//	mux.Handle(end.name, end)
+		//case POST:
+		//	mux.HandleFunc(end.name, handlers.Post)
+		//case PUT:
+		//	mux.HandleFunc(end.name, handlers.Put)
+		//case DELETE:
+		//	mux.HandleFunc(end.name, handlers.Delete)
+		//case OPTIONS:
+		//	mux.HandleFunc(end.name, handlers.Options)
+		//case TRACE:
+		//	mux.HandleFunc(end.name, handlers.Trace)
+		//case PATCH:
+		//	mux.HandleFunc(end.name, handlers.Patch)
+		//}
+		mux.Handle(end.name, end)
 	}
 }
 
-func (e *Endpoint) handleEndpoints(w http.ResponseWriter, r *http.Request) {
-	fmt.Printf("ahhhh")
+func (e *Endpoint) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(http.StatusOK)
-	w.Write([]byte(`{ "message": e.action }`))
+	w.Write([]byte(fmt.Sprintf(`{ "message": %s }`, e.action)))
 }
 
-func index(w http.ResponseWriter, r *http.Request) {
-	w.Header().Set("Content-Type", "application/json")
-	switch r.Method {
-	case "GET":
-		w.WriteHeader(http.StatusOK)
-		w.Write([]byte(`{ "message": "GET request received"}`))
-	case "POST":
-		w.WriteHeader(http.StatusOK)
-		w.Write([]byte(`{ "message": "POST request received"}`))
-	case "PUT":
-		w.WriteHeader(http.StatusOK)
-		w.Write([]byte(`{ "message": "PUT request received"}`))
-	case "DELETE":
-		w.WriteHeader(http.StatusOK)
-		w.Write([]byte(`{ "message": "DELETE request received"}`))
-	default:
-		w.WriteHeader(http.StatusNotFound)
-		w.Write([]byte(`{ "message": "not found"}`))
-
-	}
-}
+//func index(w http.ResponseWriter, r *http.Request) {
+//	w.Header().Set("Content-Type", "application/json")
+//	switch r.Method {
+//	case "GET":
+//		w.WriteHeader(http.StatusOK)
+//		w.Write([]byte(fmt.Sprintf(`{ "message": %s}`, r.URL.Path)))
+//	case "POST":
+//		w.WriteHeader(http.StatusOK)
+//		w.Write([]byte(`{ "message": "POST request received"}`))
+//	case "PUT":
+//		w.WriteHeader(http.StatusOK)
+//		w.Write([]byte(`{ "message": "PUT request received"}`))
+//	case "DELETE":
+//		w.WriteHeader(http.StatusOK)
+//		w.Write([]byte(`{ "message": "DELETE request received"}`))
+//	default:
+//		w.WriteHeader(http.StatusNotFound)
+//		w.Write([]byte(`{ "message": "not found"}`))
+//
+//	}
+//}
 
 func main() {
 	mux = http.NewServeMux()
+	endpoints := Endpoints{}
 	e := &Endpoint{
-		name:        "test",
-		requestType: GET,
+		name:        "/test",
 		action:      "this is a test",
+		requestType: GET,
 	}
-	mux.HandleFunc(e.name, e.handleEndpoints)
+	endpoints.bind(e)
+	endpoints.bindListeners()
+
+	fmt.Printf("Server is running....\n")
+	//mux.Handle("/", e)
+
 	log.Fatal(http.ListenAndServe(":8080", mux))
 }
