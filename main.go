@@ -2,6 +2,7 @@ package main
 
 import (
 	"GoPI/handlers"
+	"fmt"
 	"log"
 	"net/http"
 	"strings"
@@ -34,7 +35,7 @@ const (
 
 type Endpoint struct {
 	name        string
-	requestType *RequestType
+	requestType RequestType
 	action      string
 }
 
@@ -57,8 +58,9 @@ func (e *Endpoints) bind(ep *Endpoint) {
 
 func (e *Endpoints) bindListeners() {
 	for _, end := range e.endpoints {
-		switch *end.requestType {
+		switch end.requestType {
 		case GET:
+			fmt.Printf("got here")
 			mux.HandleFunc(end.name, handlers.Get)
 		case POST:
 			mux.HandleFunc(end.name, handlers.Post)
@@ -73,12 +75,15 @@ func (e *Endpoints) bindListeners() {
 		case PATCH:
 			mux.HandleFunc(end.name, handlers.Patch)
 		}
-		mux.HandleFunc(end.name, handlers.Get)
+		mux.HandleFunc(end.name, end.handleEndpoints)
 	}
 }
 
-func (e *Endpoints) handleEndpoints(w http.ResponseWriter, r *http.Request) {
+func (e *Endpoint) handleEndpoints(w http.ResponseWriter, r *http.Request) {
+	fmt.Printf("ahhhh")
 	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(http.StatusOK)
+	w.Write([]byte(`{ "message": e.action }`))
 }
 
 func index(w http.ResponseWriter, r *http.Request) {
@@ -105,6 +110,11 @@ func index(w http.ResponseWriter, r *http.Request) {
 
 func main() {
 	mux = http.NewServeMux()
-	mux.HandleFunc("/", index)
-	log.Fatal(http.ListenAndServe(":5000", mux))
+	e := &Endpoint{
+		name:        "test",
+		requestType: GET,
+		action:      "this is a test",
+	}
+	mux.HandleFunc(e.name, e.handleEndpoints)
+	log.Fatal(http.ListenAndServe(":8080", mux))
 }

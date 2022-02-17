@@ -17,7 +17,9 @@ func IsRequestType(name string) bool {
 }
 
 func Get(w http.ResponseWriter, r *http.Request) {
-	//TODO
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(http.StatusOK)
+	w.Write([]byte(`{ "message": "GET request received"}`))
 }
 
 func Post(w http.ResponseWriter, r *http.Request) {
